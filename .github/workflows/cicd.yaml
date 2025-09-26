@@ -84,12 +84,17 @@ jobs:
 
     - name: Update tag in Helm chart
       run: |
-        sed -i 's/tag: .*/tag: "18023618648"/' mychart/values.yaml
+        sed -i 's/tag: .*/tag: "${{ github.run_id }}"/' mychart/values.yaml
+
 
     - name: Commit and push changes
       run: |
         git config --global user.email "vivienneyahaya86@gmail.com"
         git config --global user.name "vdotsey"
         git add mychart/values.yaml
-        git commit -m "Update tag in Helm chart"
-        git push
+        if ! git diff --cached --quiet; then
+          git commit -m "Update tag in Helm chart"
+          git push
+        else
+          echo "No changes to commit"
+        fi
